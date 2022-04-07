@@ -6,6 +6,8 @@ from random import random
 import random
 import math
 
+complex = 0
+
 
 # verify if the value is prime number
 def verifPrimeNumber(value):
@@ -35,6 +37,15 @@ def modInverse(e, y):
         if (((e%y) * (x%y)) % y == 1):
             return x
 
+def getPandQwithN(n):
+    p = 0
+    q = 0
+    for i in range(2, n-1):
+        if(n % i == 0):
+            p = i
+            q = n/p
+    return {"p": int(p), "q": int(q)}
+
 def algorithmKey():
     size = int(input("Entrez la taille: "))
     while(size <= 3):
@@ -58,29 +69,69 @@ def algorithmKey():
         while(pgcd(e, y) != 1):
             e = random.randint(2, y)
         d = modInverse(e, y)
+    print("size: ", pow( 2, size/2 ))
     return {"private": [e, n], "public": [d, n]}
 
     
 def encrypt(message, key, type):
-    messageEncrypt = math.pow(message, key[type][0]) % key[type][1]
+    messageEncrypt = pow(message, key[type][0], key[type][1])
+
+def deciphers(message, key, type):
+    messageDeciphers = pow(message, key[type][0], key[type][1])
+
 
     
 
 
 if __name__ == '__main__':
 
-    key = algorithmKey()
+    ###########################
+    ####get key with size: ####
+    ###########################
+
+    # key = algorithmKey()
+    # print(key)
+
+    ###########################################
+    ####chiffrer et dechiffrer le message: ####
+    ###########################################
+
+    # message = random.randint(2, key["private"][1])
+
+    # messageEncrypt = pow(message, key["private"][0], key["private"][1])
+
+    # messageDeciphers = pow(messageEncrypt, key["public"][0], key["public"][1])
+
+    # print("message: ", message)
+
+    # print("message chiffree: ", messageEncrypt)
+
+    # print("message dechiffre: ", messageDeciphers)
+
+    #####################################################################
+    ####get message origine with the message encrypt and key public: ####
+    ####################################################################
+
+    e = 12413
+    n = 13289
+
+    pq = getPandQwithN(n)
+
+    y = (pq["p"] - 1) * (pq["q"] - 1)
+
+    d = modInverse(e, y)
+
+    key = {'private':[d, n], 'public':[e, n]}
+
     print(key)
 
-    message = random.randint(2, key["private"][1])
+    messageEncrypt = int(input("Entrz le message chiffre: "))
 
-    messageEncrypt = pow(message, key["private"][0], key["private"][1])
+    message = pow(messageEncrypt, key['private'][0], key['private'][1])
 
-    messageDeciphers = pow(messageEncrypt, key["public"][0], key["public"][1])
+    messageEncrypt = pow(message, key['public'][0], key['public'][1])
 
     print("message: ", message)
+    # print("message dechiffrer: ", messageEncrypt)
 
-    print("message chiffree: ", messageEncrypt)
-
-    print("message dechiffre: ", messageDeciphers)
 
