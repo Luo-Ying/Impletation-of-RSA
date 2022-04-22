@@ -7,6 +7,7 @@ from random import random
 import random
 import math
 import time
+from xxlimited import new
 
 complex = 0
 n = 0
@@ -97,18 +98,18 @@ def algorithmKey():
     return {"private": [d, n], "public": [e, n]}
 
     
-def transferMessageAlphabetEnChiffre(N, message):
+def transferMessageAlphabetEnChiffre(N, message, key):
     K = 0
-    key = ""
-    while(K < 2):
-        key = algorithmKey()
-        K = int(math.log(key['public'][1], N))       # K: size of bloc
-    print(key)
+    # key = ""
+    # while(K < 2):
+    #     key = algorithmKey()
+    #     K = int(math.log(key['public'][1], N))       # K: size of bloc
+    # print(key)
+    K = int(math.log(key['public'][1], N))
     print("taille du bloc: ", K)
-
     listChiffreMessage = []
 
-    for i in range (0, len(message)-1, K):
+    for i in range (0, len(message), K):
         chiffreMessage = 0
         transferMessage = 0
         power = 1
@@ -125,6 +126,33 @@ def transferMessageAlphabetEnChiffre(N, message):
         listChiffreMessage.append(chiffreMessage)
     
     return listChiffreMessage
+
+
+def dechiffrerMessageEnAlphabet(key, message):
+    listMessageDechiffre = []
+
+    for i in range (len(message)):
+        messageDechiffre = pow(message[i], key["private"][0], key["private"][1])
+        listMessageDechiffre.append(messageDechiffre)
+
+    print(listMessageDechiffre)
+
+    K = int(math.log(key['public'][1], N))
+
+    listValueAlphabet = []
+    messageAlphabet = ""
+
+    new_alphabet = {v:k for k,v in alphabet.items()}
+
+    for m in range (len(listMessageDechiffre)):
+        numRest = listMessageDechiffre[m]
+        for power in range (K-1, -1, -1):
+            num = int(numRest/pow(N, power))
+            numRest -= num*pow(N, power)
+            listValueAlphabet.append(num)
+            messageAlphabet += new_alphabet[num]
+
+    print(messageAlphabet)
 
     
 
@@ -207,13 +235,14 @@ if __name__ == '__main__':
     ####Etape 3 RSA et Codage: ##########################################
     #####################################################################
 
-    
+    key = algorithmKey()
 
     N = 40      # N: number of alphabets
 
     message = "ENVOYER_2500€"
 
-    listMessageChiffre = transferMessageAlphabetEnChiffre(N, message)
+    listMessageChiffre = transferMessageAlphabetEnChiffre(N, message, key)
 
-    print(listMessageChiffre)
-    
+    # print(listMessageChiffre)
+
+    dechiffrerMessageEnAlphabet(key, listMessageChiffre)
