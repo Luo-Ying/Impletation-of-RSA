@@ -9,7 +9,12 @@ import math
 import time
 
 complex = 0
+n = 0
+e = 0
 
+alphabet = {"A":0,"B":1,"C":2,"D":3,"E":4,"F":5,"G":6,"H":7,"I":8,"J":9,"K":10,"L":11,"M":12,"N":13,"O":14,
+"P":15,"Q":16,"R":17,"S":18,"T":19,"U":20,"V":21,"W":22,"X":23,"Y":24,"Z":25,"_":26,".":27,"?":28,"€":29,
+"0":30,"1":31,"2":32,"3":33,"4":34,"5":35,"6":36,"7":37,"8":38,"9":39}
 
 # verify if the value is prime number
 def verifPrimeNumber(value):
@@ -87,16 +92,39 @@ def algorithmKey():
             complex += 1
             e = random.randint(2, y)
         d = modInverse(e, y)
+    # print("e: ", e)
     print("size: ", pow( 2, size/2 ))
-    return {"private": [e, n], "public": [d, n]}
+    return {"private": [d, n], "public": [e, n]}
 
     
-def encrypt(message, key, type):
-    messageEncrypt = pow(message, key[type][0], key[type][1])
+def transferMessageAlphabetEnChiffre(N, message):
+    K = 0
+    key = ""
+    while(K < 2):
+        key = algorithmKey()
+        K = int(math.log(key['public'][1], N))       # K: size of bloc
+    print(key)
+    print("taille du bloc: ", K)
 
-def deciphers(message, key, type):
-    messageDeciphers = pow(message, key[type][0], key[type][1])
+    listChiffreMessage = []
 
+    for i in range (0, len(message)-1, K):
+        chiffreMessage = 0
+        transferMessage = 0
+        power = 1
+        for j in range (i, i+K):
+            if(j == len(message)):
+                break
+            print(message[j],": ", alphabet[message[j]])
+            transferMessage += (alphabet[message[j]] * pow(N, (K-power)))
+            power += 1
+            chiffreMessage = pow(transferMessage, key['public'][0], key['public'][1])
+        print("Transfer message en bloc: ", transferMessage)
+        print("Chiffre message: ", chiffreMessage)
+        print(" ")
+        listChiffreMessage.append(chiffreMessage)
+    
+    return listChiffreMessage
 
     
 
@@ -130,33 +158,38 @@ if __name__ == '__main__':
     ####get message origine with the message encrypt and key public: ####
     #####################################################################
 
-    time_start=time.time()
+    # time_start=time.time()
 
-    e = 163119273
-    n = 755918011
+    # e = 163119273
+    # n = 755918011
 
-    pq = getPandQwithN(n)
+    # pq = getPandQwithN(n)
 
-    y = (pq["p"] - 1) * (pq["q"] - 1)
+    # y = (pq["p"] - 1) * (pq["q"] - 1)
 
-    d = modInverse(e, y)
+    # d = modInverse(e, y)
 
-    key = {'private':[d, n], 'public':[e, n]}
+    # key = {'private':[d, n], 'public':[e, n]}
 
-    print(key)
+    # print(key)
 
-    listMessage = [671828605, 407505023, 288441355, 679172842, 180261802]
+    # listMessage = [671828605, 407505023, 288441355, 679172842, 180261802]
 
 
-    for i in range (0, len(listMessage)):
-        message = pow(listMessage[i], key['private'][0], key['private'][1])
-        messageEncrypt = pow(message, key['public'][0], key['public'][1])
-        print("message: ", message)
-        print("message dechiffrer: ", messageEncrypt)
-        print(" ")
+    # for i in range (0, len(listMessage)):
+    #     message = pow(listMessage[i], key['private'][0], key['private'][1])
+    #     messageEncrypt = pow(message, key['public'][0], key['public'][1])
+    #     print("message: ", message)
+    #     print("message dechiffrer: ", messageEncrypt)
+    #     print(" ")
     
-    time_end=time.time()
-    print('time cost',time_end-time_start,'s')
+    # time_end=time.time()
+    # print('time cost',time_end-time_start,'s')
+
+
+    #####################################
+    #######test manuel one piece#########
+    #####################################
 
     # messageEncrypt = int(input("Entrz le message chiffre: "))
 
@@ -169,5 +202,18 @@ if __name__ == '__main__':
 
     # print("complexite: ", complex)
 
+
+    #####################################################################
+    ####Etape 3 RSA et Codage: ##########################################
+    #####################################################################
+
     
 
+    N = 40      # N: number of alphabets
+
+    message = "ENVOYER_2500€"
+
+    listMessageChiffre = transferMessageAlphabetEnChiffre(N, message)
+
+    print(listMessageChiffre)
+    
